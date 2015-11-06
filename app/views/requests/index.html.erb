@@ -1,0 +1,63 @@
+<div class="alert alert-success hide"></div>
+<div class="form-group">
+	<%= link_to "Parse JSON", '#', :data => {url: requests_parse_json_path}, :id => 'parse_json', :class => 'btn btn-primary' %>
+</div>
+
+<%= will_paginate %>
+
+<table class="table table-striped">
+	<tr>
+		<th>Request Number</th>
+		<th>Sequence Number</th>
+		<th>Request Action</th>
+		<th>Primary Service Area Code</th>
+		<th>Additional Service Area Codes</th>
+		<th>Company Name</th>
+		<th>Address</th>
+		<th>Digsite Info Well Known Text</th>
+	</tr>
+	<% @requests.each do |request| %>
+	<tr>
+		<td><%= link_to request.request_number, request %></td>
+		<td><%= request.sequence_number %></td>
+		<td><%= request.request_type %></td>
+		<td><%= request.service_area_primary_service_area_code %></td>
+		<td><%= request.service_area_additional_service_area_codes %></td>
+		<td><%= request.excavator_company_name %></td>
+		<td><%= request.excavator_address %></td>
+		<td><%= request.digsite_info_well_known_text %></td>
+	</tr>
+	<% end %>
+
+<%= will_paginate %>
+
+<script>
+$(function(){
+	$('#parse_json').on('click', function(element){
+		var url = $(this).data('url');
+		$.ajax({
+			type: 'GET',
+			url: 'data.json',
+			dataType: 'json'
+		}).done(function(json){
+			$.ajax({
+				type: 'POST',
+				dataType: 'JSON',
+				url: url,
+				data: json
+			}).done(function(data) {
+				$('.alert.alert-success').removeClass('hide');
+				$('.alert.alert-success').text('The json data was successfully parsed.');
+				window.location.href = '<%= root_path %>';
+				console.log(data);
+			}).fail(function(jqXHR, textStatus){
+				console.log(textStatus);
+			});
+			console.log('success');
+		}).fail(function(jqXHR, textStatus){
+			console.log(textStatus);
+		});
+		return false;
+	});
+});
+</script>
